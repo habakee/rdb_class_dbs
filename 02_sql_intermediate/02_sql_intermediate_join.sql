@@ -95,6 +95,6 @@ ON e.emp_no=t.emp_no;
 -- 11. 현재의 직함만을 보고 싶다.
 SELECT *
 FROM employees AS e
-LEFT JOIN titles AS t
+INNER JOIN titles AS t
 ON e.emp_no = t.emp_no
 WHERE t.to_date >= CURRENT_DATE();

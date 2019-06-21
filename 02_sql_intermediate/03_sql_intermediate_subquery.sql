@@ -54,5 +54,67 @@ LEFT JOIN (SELECT dept_no, COUNT(emp_no)
 		  GROUP BY dept_no) AS cnt_det_emp
 ON  d.dept_no = cnt_det_emp.dept_no;
 
+
+/*
+3. 현시점의 직원 정보, 직함, 연봉을 확인하고 싶다.
+*/
+-- 현시점의 직원 정보와 직함 정보 찾기
 SELECT *
-FROM 
+FROM employees AS e
+INNER JOIN (SELECT * 
+			FROM titles
+            WHERE to_date >= CURRENT_DATE()) AS cur_t
+ON e.emp_no = cur_t.emp_no;
+
+-- 현시점의 직원정보와 연봉 찾기
+SELECT *
+FROM employees AS e
+INNER JOIN (SELECT *
+			FROM salaries
+            WHERE to_date >= CURRENT_DATE()) as cur_s
+ON e.emp_no = cur_s.emp_no;
+
+-- 앞선 두 개의 결과 합치기
+SELECT e.emp_no, first_name, last_name, title, salary
+FROM employees AS e
+INNER JOIN (SELECT * 
+			FROM titles
+			WHERE to_date >= CURRENT_DATE()) AS cur_t
+ON e.emp_no = cur_t.emp_no
+INNER JOIN (SELECT *
+			FROM salaries
+            WHERE to_date >= CURRENT_DATE()) as cur_s
+ON e.emp_no = cur_s.emp_no;
+
+/*
+4. 앞선 직함과 연봉 정보를 기반으로 직함별 평균 연봉을 얻고 싶다.
+*/
+SELECT title, AVG(salary)
+FROM (SELECT e.emp_no, first_name, last_name, title, salary
+	FROM employees as e
+    INNER JOIN (SELECT *
+				FROM titles
+                WHERE to_date >= CURRENT_DATE()) as cur_t
+	ON e.emp_no = cur_t.emp_no
+    INNER JOIN (SELECT *
+				FROM salaries
+                WHERE to_date >= CURRENT_DATE()) as cur_s
+	ON e.emp_no = cur_s.emp_no) AS t_avg
+GROUP BY title;
+
+/*
+5. 직함별 평균 연봉을 높을 순으로 보고 싶다.
+*/
+SELECT title, AVG(salary)
+FROM (SELECT e.emp_no, first_name, last_name, title, salary
+	FROM employees as e
+    INNER JOIN (SELECT *
+				FROM titles
+                WHERE to_date >= CURRENT_DATE()) as cur_t
+	ON e.emp_no = cur_t.emp_no
+    INNER JOIN (SELECT *
+				FROM salaries
+                WHERE to_date >= CURRENT_DATE()) as cur_s
+	ON e.emp_no = cur_s.emp_no) AS t_avg
+GROUP BY title
+ORDER BY AVG(salary) DESC;
