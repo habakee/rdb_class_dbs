@@ -81,6 +81,20 @@ inner join name_class as n
 on substr(last_name, 1, 1) between n.start_L and n.end_L
 order by start_L, last_name;
 
+-- select first_le, count(emp_no) 
+-- from (select emp_no, substr(last_name, 1, 1) as first_le, last_name 
+-- 	from employees) as first_le_test 
+-- group by first_le
+-- order by first_le;
 
+-- 10. 직원의 직함을 같이 보고 싶다.
+select * from employees as e
+LEFT JOIN titles as t
+ON e.emp_no=t.emp_no;
 
-select first_le, count(emp_no) from (select emp_no, substr(last_name, 1, 1) as first_le, last_name from employees) as first_le_test group by first_le;
+-- 11. 현재의 직함만을 보고 싶다.
+SELECT *
+FROM employees AS e
+LEFT JOIN titles AS t
+ON e.emp_no = t.emp_no
+WHERE t.to_date >= CURRENT_DATE();
